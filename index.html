@@ -2,305 +2,49 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  />
 
   <title>오준영 전용 스케줄 메모</title>
 
-  <style>
-    *{ box-sizing:border-box; }
-
-    body{
-      margin:0;
-      background:#f3f3f3;
-      font-family:sans-serif;
-    }
-
-    .app{
-      max-width:500px;
-      margin:auto;
-      padding:20px;
-      padding-bottom:calc(120px + env(safe-area-inset-bottom));
-      overflow:hidden;
-    }
-
-    h1{
-      text-align:center;
-      font-size:32px;
-      margin:40px 0 28px;
-      word-break:keep-all;
-    }
-
-    .form{
-      background:white;
-      padding:18px;
-      border-radius:18px;
-      margin-bottom:24px;
-      box-shadow:0 3px 14px rgba(0,0,0,0.08);
-      overflow:hidden;
-    }
-
-    input, textarea, button{
-      width:100%;
-      margin-top:10px;
-      padding:14px;
-      border-radius:12px;
-      border:1px solid #ccc;
-      font-size:18px;
-    }
-
-    input[type="date"]{
-      width:100%;
-      max-width:100%;
-      min-width:0;
-      display:block;
-      text-align:center;
-      background:#f4f4f4;
-      -webkit-appearance:none;
-      appearance:none;
-    }
-
-    input[type="date"]::-webkit-datetime-edit{ padding:0; }
-    input[type="date"]::-webkit-calendar-picker-indicator{ margin:0; padding:0; }
-
-    textarea{
-      height:120px;
-      resize:none;
-    }
-
-    button{
-      background:black;
-      color:white;
-      border:none;
-      cursor:pointer;
-      font-weight:600;
-    }
-
-    .card{
-      background:white;
-      padding:18px;
-      border-radius:18px;
-      margin-bottom:16px;
-      box-shadow:0 3px 14px rgba(0,0,0,0.08);
-    }
-
-    .card-top{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:10px;
-    }
-
-    .date{
-      font-weight:bold;
-      font-size:20px;
-    }
-
-    .pay{
-      font-size:20px;
-      font-weight:bold;
-      color:#007aff;
-      white-space:nowrap;
-    }
-
-    .memo{
-      margin-top:14px;
-      font-size:20px;
-      line-height:1.5;
-      white-space:pre-wrap;
-    }
-
-    .button-row{
-      display:flex;
-      flex-direction:row;
-      gap:8px;
-      margin-top:16px;
-    }
-
-    .button-row button{
-      flex:1;
-      margin-top:0;
-      padding:12px 0;
-      font-size:16px;
-    }
-
-    .edit-box textarea{
-      margin-top:10px;
-    }
-  </style>
-
+  <link rel="stylesheet" href="style.css" />
   <link rel="manifest" href="manifest.json" />
 </head>
 
 <body>
+
   <div class="app">
+
     <h1>오준영 전용 스케줄 메모</h1>
 
     <div class="form">
-      <input type="date" id="date" />
 
-      <textarea id="memo" placeholder="일정을 입력하세요"></textarea>
+      <input
+        type="date"
+        id="date"
+      />
 
-      <button type="button" onclick="addSchedule()">일정 추가</button>
+      <textarea
+        id="memo"
+        placeholder="일정을 입력하세요"
+      ></textarea>
+
+      <button
+        onclick="addSchedule()"
+        type="button"
+      >
+        일정 추가
+      </button>
+
     </div>
 
     <div id="schedule-list"></div>
+
   </div>
 
-  <script>
-    let schedules = [];
+  <script src="app.js"></script>
 
-    try{
-      schedules = JSON.parse(localStorage.getItem("schedules")) || [];
-    }catch(e){
-      schedules = [];
-    }
-
-    function addSchedule(){
-      const dateEl = document.getElementById("date");
-      const memoEl = document.getElementById("memo");
-
-      const date = dateEl.value;
-      const memo = memoEl.value.trim();
-
-      if(!date || !memo){
-        alert("날짜와 일정을 입력해주세요");
-        return;
-      }
-
-      schedules.push({
-        id: Date.now(),
-        date: date,
-        memo: memo,
-        pay: ""
-      });
-
-      sortSchedules();
-      saveData();
-
-      memoEl.value = "";
-    }
-
-    function deleteSchedule(id){
-      if(!confirm("이 일정을 삭제할까요?")) return;
-
-      schedules = schedules.filter(item => item.id !== id);
-      saveData();
-    }
-
-    function addPay(id){
-      const item = schedules.find(item => item.id === id);
-      if(!item) return;
-
-      const pay = prompt("일당을 입력하세요. 예: 150000", item.pay || "");
-      if(pay === null) return;
-
-      item.pay = pay.replace(/,/g, "").trim();
-      saveData();
-    }
-
-    function editSchedule(id){
-      const item = schedules.find(item => item.id === id);
-      if(!item) return;
-
-      const card = document.getElementById("card-" + id);
-      if(!card) return;
-
-      card.innerHTML = `
-        <div class="edit-box">
-          <input type="date" id="edit-date-${id}" value="${escapeHtml(item.date)}" />
-          <textarea id="edit-memo-${id}" placeholder="일정을 입력하세요">${escapeHtml(item.memo)}</textarea>
-
-          <div class="button-row">
-            <button type="button" onclick="saveEdit(${id})">저장</button>
-            <button type="button" onclick="render()">취소</button>
-          </div>
-        </div>
-      `;
-    }
-
-    function saveEdit(id){
-      const item = schedules.find(item => item.id === id);
-      if(!item) return;
-
-      const newDate = document.getElementById("edit-date-" + id).value;
-      const newMemo = document.getElementById("edit-memo-" + id).value.trim();
-
-      if(!newDate || !newMemo){
-        alert("날짜와 일정을 입력해주세요");
-        return;
-      }
-
-      item.date = newDate;
-      item.memo = newMemo;
-
-      sortSchedules();
-      saveData();
-    }
-
-    function sortSchedules(){
-      schedules.sort((a,b) => new Date(a.date + "T00:00:00") - new Date(b.date + "T00:00:00"));
-    }
-
-    function saveData(){
-      localStorage.setItem("schedules", JSON.stringify(schedules));
-      render();
-    }
-
-    function getDayName(dateText){
-      const days = ["일","월","화","수","목","금","토"];
-      const date = new Date(dateText + "T00:00:00");
-      return days[date.getDay()];
-    }
-
-    function formatDate(dateText){
-      const date = new Date(dateText + "T00:00:00");
-      const month = date.getMonth() + 1;
-      const day = date.getDate();
-      const week = getDayName(dateText);
-      return `${month}월 ${day}일(${week})`;
-    }
-
-    function formatPay(pay){
-      if(!pay) return "";
-      const numberPay = Number(pay);
-      if(isNaN(numberPay)) return "";
-      return numberPay.toLocaleString() + "원";
-    }
-
-    function escapeHtml(text){
-      return String(text)
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
-    }
-
-    function render(){
-      const list = document.getElementById("schedule-list");
-      list.innerHTML = "";
-
-      schedules.forEach(item => {
-        list.innerHTML += `
-          <div class="card" id="card-${item.id}">
-            <div class="card-top">
-              <div class="date">${formatDate(item.date)}</div>
-              <div class="pay">${formatPay(item.pay)}</div>
-            </div>
-
-            <div class="memo">${escapeHtml(item.memo)}</div>
-
-            <div class="button-row">
-              <button type="button" onclick="editSchedule(${item.id})">수정</button>
-              <button type="button" onclick="addPay(${item.id})">일당</button>
-              <button type="button" onclick="deleteSchedule(${item.id})">삭제</button>
-            </div>
-          </div>
-        `;
-      });
-    }
-
-    render();
-  </script>
 </body>
 </html>
