@@ -144,3 +144,64 @@ button{
 .edit-box textarea{
   margin-top:10px;
 }
+
+/* 날짜 박스 규격 맞춤 */
+input[type="date"]{
+  width:100% !important;
+  max-width:100% !important;
+  min-width:0 !important;
+
+  display:block !important;
+
+  padding:14px !important;
+  margin-top:10px !important;
+
+  border-radius:12px !important;
+  border:1px solid #ccc !important;
+
+  text-align:center !important;
+
+  background:#f4f4f4 !important;
+
+  box-sizing:border-box !important;
+
+  -webkit-appearance:none !important;
+  appearance:none !important;
+}
+
+.form{
+  overflow:hidden !important;
+}
+
+/* 일정 카드 안 메모 좌측 정렬 */
+.memo{
+  display:block !important;
+
+  text-align:left !important;
+
+  margin-top:14px !important;
+  margin-left:0 !important;
+  margin-right:0 !important;
+  margin-bottom:0 !important;
+
+  padding:0 !important;
+
+  width:100% !important;
+  height:auto !important;
+  min-height:0 !important;
+
+  font-size:20px !important;
+  line-height:1.5 !important;
+
+  white-space:pre-wrap !important;
+}
+
+/* 카드 자체도 가운데 정렬 제거 */
+.card{
+  height:auto !important;
+  min-height:0 !important;
+
+  text-align:left !important;
+  align-items:stretch !important;
+  justify-content:flex-start !important;
+}
