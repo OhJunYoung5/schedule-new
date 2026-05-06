@@ -11,14 +11,19 @@ body{
 .app{
   max-width:500px;
   margin:auto;
+
   padding:20px;
-  padding-bottom:120px;
+
+  padding-bottom:calc(120px + env(safe-area-inset-bottom));
+
+  overflow:hidden;
 }
 
 h1{
   text-align:center;
   font-size:32px;
   margin:40px 0 28px;
+  word-break:keep-all;
 }
 
 .form{
@@ -27,6 +32,7 @@ h1{
   border-radius:18px;
   margin-bottom:24px;
   box-shadow:0 3px 14px rgba(0,0,0,0.08);
+  overflow:hidden;
 }
 
 input,
@@ -35,9 +41,36 @@ button{
   width:100%;
   margin-top:10px;
   padding:14px;
+
   border-radius:12px;
+
   border:1px solid #ccc;
+
   font-size:18px;
+}
+
+input[type="date"]{
+  width:100%;
+  max-width:100%;
+  min-width:0;
+
+  display:block;
+
+  text-align:center;
+
+  background:#f4f4f4;
+
+  -webkit-appearance:none;
+  appearance:none;
+}
+
+input[type="date"]::-webkit-datetime-edit{
+  padding:0;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator{
+  margin:0;
+  padding:0;
 }
 
 textarea{
@@ -49,6 +82,7 @@ button{
   background:black;
   color:white;
   border:none;
+  cursor:pointer;
   font-weight:600;
 }
 
@@ -58,15 +92,13 @@ button{
   border-radius:18px;
   margin-bottom:16px;
   box-shadow:0 3px 14px rgba(0,0,0,0.08);
-
-  height:auto !important;
-  min-height:0 !important;
 }
 
 .card-top{
   display:flex;
   justify-content:space-between;
-  align-items:flex-start;
+  align-items:center;
+  gap:10px;
 }
 
 .date{
@@ -78,31 +110,28 @@ button{
   font-size:20px;
   font-weight:bold;
   color:#007aff;
+  white-space:nowrap;
 }
 
 .memo{
-  display:block !important;
+  margin-top:14px;
 
-  margin-top:14px !important;
-  margin-bottom:0 !important;
+  font-size:20px;
+  line-height:1.5;
 
-  padding:0 !important;
+  white-space:pre-wrap;
 
-  height:auto !important;
-  min-height:0 !important;
+  display:flex;
+  align-items:flex-start;
 
-  text-align:left !important;
-
-  font-size:20px !important;
-  line-height:1.5 !important;
-
-  white-space:pre-wrap !important;
+  min-height:auto;
 }
 
 .button-row{
   display:flex;
+  flex-direction:row;
   gap:8px;
-  margin-top:18px;
+  margin-top:16px;
 }
 
 .button-row button{
@@ -110,4 +139,8 @@ button{
   margin-top:0;
   padding:12px 0;
   font-size:16px;
+}
+
+.edit-box textarea{
+  margin-top:10px;
 }
